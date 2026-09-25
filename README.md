@@ -51,6 +51,31 @@ https://horsetruth.com.au/llms.txt
 https://horsetruth.com.au/llms-full.txt
 ```
 
+## Fastest paid path for agents
+
+For the lowest-friction autonomous purchase path, use the **Apify Pay-Per-Event** Actor. It is **US$0.02 per successful result**, requires no Horse Truth API key, and Apify handles marketplace metering, billing, and payout:
+
+```text
+https://apify.com/crocheted_poacher/horse-truth-machine-intelligence
+```
+
+For direct Horse Truth access, start with **A$1 for 50 machine credits**:
+
+```http
+POST https://horsetruth.com.au/api/v1/machine/checkout
+Content-Type: application/json
+
+{"product_key":"AI_AGENT_TRIAL"}
+```
+
+The direct checkout response returns the Stripe checkout URL, claim token, and deterministic claim/retry path. Paid MCP calls also return this purchase path in their HTTP 402 response.
+
+Example MCP intent:
+
+```json
+{"jsonrpc":"2.0","id":"1","method":"tools/call","params":{"name":"horse_intelligence","arguments":{"horse":"Chance With Wolves"}}}
+```
+
 ## Machine access and pricing
 
 Horse Truth currently exposes two self-service machine payment paths:
