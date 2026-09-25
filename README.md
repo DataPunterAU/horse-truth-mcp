@@ -51,15 +51,17 @@ https://horsetruth.com.au/llms.txt
 https://horsetruth.com.au/llms-full.txt
 ```
 
-## Fastest paid path for agents
+## Primary paid entry for agents
 
-For the lowest-friction autonomous purchase path, use the **Apify Pay-Per-Event** Actor. It is **US$0.02 per successful result**, requires no Horse Truth API key, and Apify handles marketplace metering, billing, and payout:
+Start direct Horse Truth access with **A$1 for 50 machine credits** before paid MCP calls.
+
+For agents that prefer marketplace billing, the **Apify Pay-Per-Event** Actor remains available at **US$0.02 per successful result**:
 
 ```text
 https://apify.com/crocheted_poacher/horse-truth-machine-intelligence
 ```
 
-For direct Horse Truth access, start with **A$1 for 50 machine credits**:
+Direct Horse Truth checkout:
 
 ```http
 POST https://horsetruth.com.au/api/v1/machine/checkout
@@ -108,7 +110,6 @@ https://apify.com/crocheted_poacher/horse-truth-machine-intelligence
 
 - MCP: `https://horsetruth.com.au/api/v1/mcp`
 - A2A agent card: `https://horsetruth.com.au/.well-known/agent-card.json`
-- A2A JSON-RPC: `https://horsetruth.com.au/api/v1/a2a`
 - AI catalog: `https://horsetruth.com.au/.well-known/ai-catalog.json`
 - OpenAPI: `https://horsetruth.com.au/api/v1/machine/openapi.json`
 
