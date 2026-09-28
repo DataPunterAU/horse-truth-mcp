@@ -51,24 +51,25 @@ https://horsetruth.com.au/llms.txt
 https://horsetruth.com.au/llms-full.txt
 ```
 
-## Fastest paid path for agents
+## Fastest paid paths
 
-For the lowest-friction autonomous purchase path, use the **Apify Pay-Per-Event** Actor. It is **US$0.02 per successful result**, requires no Horse Truth API key, and Apify handles marketplace metering, billing, and payout:
+For accountless machine-to-machine payment, use Horse Truth's native **x402** routes. Paid operations return a standard `402 Payment Required` instruction; submit the payment signature and retry the equivalent x402 route. No Horse Truth account or API-key signup is required.
+
+For a browser/card purchase, the direct **A$1 starter checkout** is one click:
+
+```text
+https://horsetruth.com.au/buy/starter
+```
+
+It provides **50 Horse Truth machine credits** after successful payment and claim.
+
+For marketplace-metered usage, the **Apify Pay-Per-Event** Actor remains available at **US$0.02 per successful result**:
 
 ```text
 https://apify.com/crocheted_poacher/horse-truth-machine-intelligence
 ```
 
-For direct Horse Truth access, start with **A$1 for 50 machine credits**:
-
-```http
-POST https://horsetruth.com.au/api/v1/machine/checkout
-Content-Type: application/json
-
-{"product_key":"AI_AGENT_TRIAL"}
-```
-
-The direct checkout response returns the Stripe checkout URL, claim token, and deterministic claim/retry path. Paid MCP calls also return this purchase path in their HTTP 402 response.
+The free MCP tool `discover_purchase_options` and paid HTTP 402 responses expose the currently available payment paths.
 
 Example MCP intent:
 
@@ -78,12 +79,19 @@ Example MCP intent:
 
 ## Machine access and pricing
 
-Horse Truth currently exposes two self-service machine payment paths:
+Horse Truth exposes three self-service payment paths:
 
+- Native x402: **US$0.02 per successful result** on x402-enabled operations.
 - Direct Horse Truth starter: **A$1 one-time for 50 machine credits**.
 - Apify marketplace: **US$0.02 per successful result** through Apify Pay-Per-Event.
 
-Direct checkout:
+One-click direct checkout:
+
+```text
+https://horsetruth.com.au/buy/starter
+```
+
+Programmatic checkout remains available:
 
 ```http
 POST https://horsetruth.com.au/api/v1/machine/checkout
