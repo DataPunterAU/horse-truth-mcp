@@ -1,13 +1,13 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "description": "Derived Australian racehorse intelligence for AI agents. Two discovery tools are free; paid intelligence supports accountless x402 at US$0.02 per successful call on Base USDC, direct credits, and Apify fallback. Raw provider records are not exposed.",
+  "description": "Derived Australian racehorse intelligence for AI agents. Preferred remote MCP transport uses the stateless Horse Truth edge; two discovery tools are free, paid intelligence supports accountless x402 at US$0.02 per successful call on Base USDC, direct credits, and Apify fallback.",
   "name": "au.com.horsetruth/machine-intelligence",
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://horsetruth.com.au/api/v1/mcp"
+      "url": "https://horse-truth-edge-production.up.railway.app/api/v1/mcp"
     }
   ],
   "title": "Horse Truth Machine Intelligence",
-  "version": "1.0.1"
+  "version": "1.0.3"
 }

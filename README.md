@@ -9,13 +9,15 @@ Horse Truth provides **derived Australian racehorse intelligence** for AI agents
 Remote Streamable HTTP MCP:
 
 ```text
-https://horsetruth.com.au/api/v1/mcp
+https://horse-truth-edge-production.up.railway.app/api/v1/mcp
 ```
+
+This stateless edge is the preferred MCP transport. It proxies the canonical Horse Truth backend during normal operation and preserves MCP discovery plus purchase fallbacks during stateful backend restarts.
 
 Claude Code:
 
 ```bash
-claude mcp add --transport http horse-truth https://horsetruth.com.au/api/v1/mcp
+claude mcp add --transport http horse-truth https://horse-truth-edge-production.up.railway.app/api/v1/mcp
 ```
 
 Generic configuration:
@@ -24,7 +26,7 @@ Generic configuration:
 {
   "mcpServers": {
     "horse-truth": {
-      "url": "https://horsetruth.com.au/api/v1/mcp"
+      "url": "https://horse-truth-edge-production.up.railway.app/api/v1/mcp"
     }
   }
 }
@@ -38,7 +40,7 @@ au.com.horsetruth/machine-intelligence
 
 Useful public metadata:
 
-- Server card: https://horsetruth.com.au/api/v1/mcp/server-card
+- Server card: https://horse-truth-edge-production.up.railway.app/api/v1/mcp/server-card
 - Machine discovery: https://horsetruth.com.au/api/v1/machine/discovery
 - Products: https://horsetruth.com.au/api/v1/machine/products
 - Tollbooth catalog: https://horsetruth.com.au/api/v1/machine/tollbooths
@@ -149,7 +151,7 @@ A caller without a direct entitlement receives machine-readable purchase navigat
 
 ## Protocol surfaces
 
-- MCP: https://horsetruth.com.au/api/v1/mcp
+- MCP: https://horse-truth-edge-production.up.railway.app/api/v1/mcp
 - A2A agent card: https://horsetruth.com.au/.well-known/agent-card.json
 - A2A JSON-RPC: https://horsetruth.com.au/api/v1/a2a
 - AI catalog: https://horsetruth.com.au/.well-known/ai-catalog.json
