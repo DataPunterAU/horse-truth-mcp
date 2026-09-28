@@ -335,7 +335,7 @@ def mcp():
             "jsonrpc": "2.0",
             "id": req_id,
             "result": {
-                "protocolVersion": "2025-06-18",
+                "protocolVersion": "2026-07-28",
                 "capabilities": {"tools": {}},
                 "serverInfo": {"name": "Horse Truth Machine Intelligence", "version": VERSION},
             },
@@ -369,7 +369,7 @@ def mcp():
         "id": req_id,
         "error": {
             "code": -32003,
-            "message": "Horse Truth core intelligence is temporarily unavailable; autonomous marketplace billing remains available.",
+            "message": "Horse Truth core intelligence is temporarily unavailable; use the advertised x402 or Apify fallback purchase path.",
             "data": data,
         },
     }), 503, {"Retry-After": "15"}
