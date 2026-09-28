@@ -9,47 +9,111 @@ app = Flask(__name__)
 
 CORE_BASE_URL = (os.environ.get("CORE_BASE_URL") or "https://horsetruth.com.au").rstrip("/")
 APIFY_URL = "https://apify.com/crocheted_poacher/horse-truth-machine-intelligence"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
+
+def _paid_tool(name: str, description: str, input_schema: dict, x402_template: str) -> dict:
+    return {
+        "name": name,
+        "description": "PAID: US$0.02 per successful autonomous x402 call, or 1 Horse Truth direct credit. " + description,
+        "_meta": {
+            "com.horsetruth/pricing": {
+                "preferredAutonomousProvider": "X402",
+                "pricePerCallUsd": 0.02,
+                "pricingModel": "per_call",
+                "anonymousCallable": True,
+                "x402Currency": "USDC",
+                "x402Network": "eip155:8453",
+                "x402UrlTemplate": CORE_BASE_URL + x402_template,
+                "marketplaceFallbackProvider": "APIFY",
+                "apifyPriceUsdPerSuccessfulResult": 0.02,
+            },
+            "com.horsetruth/commerce": {
+                "preferredProvider": "X402",
+                "priceUsdPerSuccessfulResult": 0.02,
+                "network": "eip155:8453",
+                "paymentRequiredHeader": "PAYMENT-REQUIRED",
+                "paymentSignatureHeader": "PAYMENT-SIGNATURE",
+                "paymentResponseHeader": "PAYMENT-RESPONSE",
+                "x402UrlTemplate": CORE_BASE_URL + x402_template,
+                "oneClickStarterCheckoutUrl": CORE_BASE_URL + "/buy/starter",
+                "apifyFallbackUrl": APIFY_URL,
+            },
+        },
+        "inputSchema": input_schema,
+        "annotations": {"readOnlyHint": True, "openWorldHint": False, "destructiveHint": False},
+    }
+
 
 TOOL_DEFS = [
     {
         "name": "sandbox_preview",
         "description": "FREE: Return a fixed Horse Truth schema/capability preview. No paid entitlement is consumed.",
+        "_meta": {"com.horsetruth/pricing": {"free": True, "units": 0}, "com.horsetruth/auth": {"required": False}},
         "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False},
-        "annotations": {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True},
+        "annotations": {"readOnlyHint": True, "openWorldHint": False, "destructiveHint": False},
     },
     {
         "name": "discover_purchase_options",
-        "description": "FREE: Return Horse Truth machine pricing and the preferred autonomous payment route.",
+        "description": "FREE: Return Horse Truth machine pricing and autonomous purchase routes.",
+        "_meta": {"com.horsetruth/pricing": {"free": True, "units": 0}, "com.horsetruth/auth": {"required": False}},
         "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False},
-        "annotations": {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True},
+        "annotations": {"readOnlyHint": True, "openWorldHint": False, "destructiveHint": False},
     },
-    {
-        "name": "horse_intelligence",
-        "description": "PAID: Derived Horse Truth intelligence for one named Australian racehorse.",
-        "inputSchema": {"type": "object", "properties": {"horse": {"type": "string"}}, "required": ["horse"], "additionalProperties": False},
-        "annotations": {"readOnlyHint": True, "destructiveHint": False},
-    },
-    {
-        "name": "horse_changes",
-        "description": "PAID: Material Horse Truth change events for one named Australian racehorse.",
-        "inputSchema": {"type": "object", "properties": {"horse": {"type": "string"}}, "required": ["horse"], "additionalProperties": False},
-        "annotations": {"readOnlyHint": True, "destructiveHint": False},
-    },
-    {
-        "name": "resolve_horse",
-        "description": "PAID: Resolve a horse identity against Horse Truth profiles.",
-        "inputSchema": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"], "additionalProperties": False},
-        "annotations": {"readOnlyHint": True, "destructiveHint": False},
-    },
-    {
-        "name": "horse_rankings",
-        "description": "PAID: Current derived Horse Truth rankings.",
-        "inputSchema": {"type": "object", "properties": {"limit": {"type": "integer", "minimum": 1, "maximum": 100}}, "additionalProperties": False},
-        "annotations": {"readOnlyHint": True, "destructiveHint": False},
-    },
+    _paid_tool(
+        "horse_intelligence",
+        "Return derived intelligence for one named Australian racehorse.",
+        {"type":"object","properties":{"horse":{"type":"string"}},"required":["horse"],"additionalProperties":False},
+        "/api/v1/x402/horse-intelligence?horse={horse}",
+    ),
+    _paid_tool(
+        "horse_changes",
+        "Return material Horse Truth state-change events for one horse.",
+        {"type":"object","properties":{"horse":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":100}},"required":["horse"],"additionalProperties":False},
+        "/api/v1/x402/horse-changes?horse={horse}",
+    ),
+    _paid_tool(
+        "horse_rankings",
+        "Return current derived Horse Truth rankings.",
+        {"type":"object","properties":{"limit":{"type":"integer","minimum":1,"maximum":500}},"additionalProperties":False},
+        "/api/v1/x402/rankings?limit={limit}",
+    ),
+    _paid_tool(
+        "resolve_horse",
+        "Resolve a horse identity against Horse Truth profiles.",
+        {"type":"object","properties":{"query":{"type":"string"}},"required":["query"],"additionalProperties":False},
+        "/api/v1/x402/resolve-horse?q={query}",
+    ),
+    _paid_tool(
+        "horse_snapshot",
+        "Return a compact derived operating snapshot for one horse.",
+        {"type":"object","properties":{"horse":{"type":"string"}},"required":["horse"],"additionalProperties":False},
+        "/api/v1/x402/horse-snapshot?horse={horse}",
+    ),
+    _paid_tool(
+        "horse_explanation",
+        "Return a structured explanation of the current derived Horse Truth read.",
+        {"type":"object","properties":{"horse":{"type":"string"}},"required":["horse"],"additionalProperties":False},
+        "/api/v1/x402/horse-explanation?horse={horse}",
+    ),
+    _paid_tool(
+        "horse_compare",
+        "Compare compact derived snapshots for two to five horses.",
+        {"type":"object","properties":{"horses":{"type":"array","items":{"type":"string"},"minItems":2,"maxItems":5}},"required":["horses"],"additionalProperties":False},
+        "/api/v1/x402/horse-compare?horses={horses}",
+    ),
+    _paid_tool(
+        "horse_provenance",
+        "Return a cryptographic provenance receipt for derived horse intelligence.",
+        {"type":"object","properties":{"horse":{"type":"string"}},"required":["horse"],"additionalProperties":False},
+        "/api/v1/x402/horse-provenance?horse={horse}",
+    ),
+    _paid_tool(
+        "horse_signal",
+        "Return one named derived Horse Truth signal for a horse.",
+        {"type":"object","properties":{"horse":{"type":"string"},"signal":{"type":"string"}},"required":["horse","signal"],"additionalProperties":False},
+        "/api/v1/x402/horse-signal?horse={horse}&signal={signal}",
+    ),
 ]
-
 
 def public_base() -> str:
     configured = (os.environ.get("PUBLIC_BASE_URL") or "").strip().rstrip("/")
@@ -62,12 +126,22 @@ def commerce() -> dict:
     base = public_base()
     return {
         "preferredAutonomousPath": {
+            "provider": "X402",
+            "routePrefix": CORE_BASE_URL + "/api/v1/x402/",
+            "tollboothCatalog": CORE_BASE_URL + "/api/v1/machine/tollbooths",
+            "network": "eip155:8453",
+            "asset": "USDC",
+            "priceUsdPerSuccessfulResult": 0.02,
+            "paymentRequiredHeader": "PAYMENT-REQUIRED",
+            "paymentSignatureHeader": "PAYMENT-SIGNATURE",
+            "paymentResponseHeader": "PAYMENT-RESPONSE",
+            "reason": "Accountless autonomous payment; paid tools advertise an exact x402 URL template.",
+        },
+        "marketplaceFallback": {
             "provider": "APIFY",
             "url": APIFY_URL,
             "billingAuthority": "APIFY_PAY_PER_EVENT",
             "priceUsdPerSuccessfulResult": 0.02,
-            "operations": ["horse_intelligence", "horse_changes", "resolve_horse", "horse_rankings"],
-            "reason": "Platform-metered Pay-Per-Event avoids browser checkout and Horse Truth key claiming.",
         },
         "preferredDirectPath": {
             "provider": "HORSE_TRUTH_STRIPE",
@@ -75,18 +149,14 @@ def commerce() -> dict:
             "priceAud": 1.0,
             "credits": 50,
             "effectiveAudPerCredit": 0.02,
+            "checkoutUrl": CORE_BASE_URL + "/buy/starter",
             "checkout": {
                 "method": "POST",
-                "url": base + "/api/v1/machine/checkout",
+                "url": CORE_BASE_URL + "/api/v1/machine/checkout",
                 "json": {"product_key": "AI_AGENT_TRIAL"},
             },
         },
-        "microOffer": {
-            "productKey": "AI_AGENT_MICRO",
-            "priceAud": 5.0,
-            "credits": 250,
-            "effectiveAudPerCredit": 0.02,
-        },
+        "publicGateway": base,
         "productionAuthority": 0,
     }
 
@@ -225,7 +295,7 @@ def mcp_manifest():
         "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
         "name": "au.com.horsetruth/machine-intelligence",
         "title": "Horse Truth Machine Intelligence",
-        "description": "Remote derived Australian horse racing intelligence with a stateless discovery gateway and platform-billed autonomous purchase path.",
+        "description": "Remote derived Australian racehorse intelligence with 11 MCP tools, accountless x402 payment, direct credits and Apify fallback.",
         "version": VERSION,
         "remotes": [{"type": "streamable-http", "url": base + "/api/v1/mcp"}],
     }
@@ -244,7 +314,8 @@ def llms_txt():
         "# Horse Truth Machine Intelligence",
         f"- MCP: {base}/api/v1/mcp",
         f"- Discovery: {base}/api/v1/machine/discovery",
-        f"- Preferred autonomous billing: Apify Pay-Per-Event US$0.02/successful result: {APIFY_URL}",
+        "- Preferred autonomous billing: x402 US$0.02/successful call in USDC on Base (eip155:8453)",
+        f"- Marketplace fallback: Apify Pay-Per-Event US$0.02/successful result: {APIFY_URL}",
         "- Direct starter: A$1 one-time = 50 machine credits",
         "- Derived intelligence only; raw provider records are not exposed.",
         "- Production authority over Race Day scientific selection: 0",
@@ -264,7 +335,7 @@ def mcp():
             "jsonrpc": "2.0",
             "id": req_id,
             "result": {
-                "protocolVersion": "2025-06-18",
+                "protocolVersion": "2026-07-28",
                 "capabilities": {"tools": {}},
                 "serverInfo": {"name": "Horse Truth Machine Intelligence", "version": VERSION},
             },
@@ -298,7 +369,7 @@ def mcp():
         "id": req_id,
         "error": {
             "code": -32003,
-            "message": "Horse Truth core intelligence is temporarily unavailable; autonomous marketplace billing remains available.",
+            "message": "Horse Truth core intelligence is temporarily unavailable; use the advertised x402 or Apify fallback purchase path.",
             "data": data,
         },
     }), 503, {"Retry-After": "15"}
