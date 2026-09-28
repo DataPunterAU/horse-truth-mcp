@@ -1,13 +1,33 @@
 # Horse Truth MCP
 
-Remote Model Context Protocol (MCP) access to Horse Truth derived Australian racehorse intelligence.
+Public discovery surface for the production Horse Truth remote Model Context Protocol server.
 
-Horse Truth provides machine-readable derived intelligence for AI agents and software. This public repository is a distribution and discovery surface only; the proprietary Horse Truth production source remains private.
+Horse Truth provides **derived Australian racehorse intelligence** for AI agents and software. This repository contains distribution metadata and a lightweight gateway only; proprietary Horse Truth production source, provider records, and scientific model internals remain private.
 
-## Remote MCP endpoint
+## Connect
+
+Remote Streamable HTTP MCP:
 
 ```text
 https://horsetruth.com.au/api/v1/mcp
+```
+
+Claude Code:
+
+```bash
+claude mcp add --transport http horse-truth https://horsetruth.com.au/api/v1/mcp
+```
+
+Generic configuration:
+
+```json
+{
+  "mcpServers": {
+    "horse-truth": {
+      "url": "https://horsetruth.com.au/api/v1/mcp"
+    }
+  }
+}
 ```
 
 Official MCP Registry identifier:
@@ -16,82 +36,77 @@ Official MCP Registry identifier:
 au.com.horsetruth/machine-intelligence
 ```
 
-Registry manifest:
+Useful public metadata:
 
-```text
-https://horsetruth.com.au/.well-known/mcp.json
-```
+- Server card: https://horsetruth.com.au/api/v1/mcp/server-card
+- Machine discovery: https://horsetruth.com.au/api/v1/machine/discovery
+- Products: https://horsetruth.com.au/api/v1/machine/products
+- Tollbooth catalog: https://horsetruth.com.au/api/v1/machine/tollbooths
+- OpenAPI: https://horsetruth.com.au/api/v1/machine/openapi.json
+- LLM discovery: https://horsetruth.com.au/llms.txt
+- Full LLM discovery: https://horsetruth.com.au/llms-full.txt
+- Developers: https://horsetruth.com.au/developers
 
-Server card:
+## Tools
 
-```text
-https://horsetruth.com.au/api/v1/mcp/server-card
-```
+Horse Truth currently exposes **11 MCP tools**.
 
-## Available tools
+### Free discovery tools
+
+- `sandbox_preview` — fixed schema and capability preview.
+- `discover_purchase_options` — current self-service purchase and machine-payment routes.
+
+### Paid derived-intelligence tools
 
 - `horse_intelligence` — derived intelligence for one named horse.
-- `horse_changes` — material Horse Truth change events for one horse.
+- `horse_changes` — material Horse Truth state-change events.
+- `horse_rankings` — current derived rankings from the warmed canonical model cache.
 - `resolve_horse` — resolve a horse identity against Horse Truth profiles.
-- `horse_rankings` — current derived Horse Truth rankings.
+- `horse_snapshot` — compact derived operating snapshot.
+- `horse_explanation` — structured explanation of the current derived read.
+- `horse_compare` — compare two to five horse snapshots.
+- `horse_provenance` — cryptographic provenance receipt for derived intelligence.
+- `horse_signal` — request one named derived signal such as readiness, biomechanics, class, reliability, progression or alerts.
 
-## Free discovery
+All tools are read-only with respect to Horse Truth racing truth. Commercial/distribution code has **production authority 0** over Race Day scientific selection.
 
-Use the free MCP discovery tool:
+## Accountless x402 payment
 
-```text
-discover_purchase_options
-```
+The preferred autonomous rail is **x402**.
 
-Or inspect:
+Paid tool metadata returned by `tools/list` exposes:
 
-```text
-https://horsetruth.com.au/api/v1/machine/discovery
-https://horsetruth.com.au/llms.txt
-https://horsetruth.com.au/llms-full.txt
-```
+- price: **US$0.02 per successful call**
+- settlement asset: **USDC**
+- network: **Base — `eip155:8453`**
+- `PAYMENT-REQUIRED`
+- `PAYMENT-SIGNATURE`
+- `PAYMENT-RESPONSE`
+- an exact x402 execution URL template for that tool
 
-## Fastest paid paths
-
-For accountless machine-to-machine payment, use Horse Truth's native **x402** routes. Paid operations return a standard `402 Payment Required` instruction; submit the payment signature and retry the equivalent x402 route. No Horse Truth account or API-key signup is required.
-
-For a browser/card purchase, the direct **A$1 starter checkout** is one click:
-
-```text
-https://horsetruth.com.au/buy/starter
-```
-
-It provides **50 Horse Truth machine credits** after successful payment and claim.
-
-For marketplace-metered usage, the **Apify Pay-Per-Event** Actor remains available at **US$0.02 per successful result**:
+Example rankings route:
 
 ```text
-https://apify.com/crocheted_poacher/horse-truth-machine-intelligence
+https://horsetruth.com.au/api/v1/x402/rankings?limit={limit}
 ```
 
-The free MCP tool `discover_purchase_options` and paid HTTP 402 responses expose the currently available payment paths.
+An autonomous client can call the route, read the standard payment challenge, submit its payment signature, and retry the same route. No Horse Truth account or API-key claim is required for x402.
 
-Example MCP intent:
+## Other payment rails
 
-```json
-{"jsonrpc":"2.0","id":"1","method":"tools/call","params":{"name":"horse_intelligence","arguments":{"horse":"Chance With Wolves"}}}
-```
+Direct reusable credits:
 
-## Machine access and pricing
+- A$1 starter pack
+- 50 machine credits
+- effective A$0.02 per successful direct call
 
-Horse Truth exposes three self-service payment paths:
-
-- Native x402: **US$0.02 per successful result** on x402-enabled operations.
-- Direct Horse Truth starter: **A$1 one-time for 50 machine credits**.
-- Apify marketplace: **US$0.02 per successful result** through Apify Pay-Per-Event.
-
-One-click direct checkout:
+One-click checkout:
 
 ```text
 https://horsetruth.com.au/buy/starter
 ```
 
-Programmatic checkout remains available:
+Programmatic checkout:
 
 ```http
 POST https://horsetruth.com.au/api/v1/machine/checkout
@@ -100,36 +115,54 @@ Content-Type: application/json
 {"product_key":"AI_AGENT_TRIAL"}
 ```
 
-After payment, claim the issued machine key at:
-
-```text
-POST https://horsetruth.com.au/api/v1/machine/claim
-```
-
-Apify marketplace:
+Apify Pay-Per-Event fallback:
 
 ```text
 https://apify.com/crocheted_poacher/horse-truth-machine-intelligence
 ```
 
+Current Apify price: **US$0.02 per successful result**.
+
+## Example MCP request
+
+List tools:
+
+```json
+{"jsonrpc":"2.0","id":"1","method":"tools/list","params":{}}
+```
+
+Call derived horse intelligence:
+
+```json
+{
+  "jsonrpc":"2.0",
+  "id":"2",
+  "method":"tools/call",
+  "params":{
+    "name":"horse_intelligence",
+    "arguments":{"horse":"Chance With Wolves"}
+  }
+}
+```
+
+A caller without a direct entitlement receives machine-readable purchase navigation. Paid tool metadata also provides the exact x402 route template so an autonomous client does not need to infer payment routing.
+
 ## Protocol surfaces
 
-- MCP: `https://horsetruth.com.au/api/v1/mcp`
-- A2A agent card: `https://horsetruth.com.au/.well-known/agent-card.json`
-- A2A JSON-RPC: `https://horsetruth.com.au/api/v1/a2a`
-- AI catalog: `https://horsetruth.com.au/.well-known/ai-catalog.json`
-- OpenAPI: `https://horsetruth.com.au/api/v1/machine/openapi.json`
+- MCP: https://horsetruth.com.au/api/v1/mcp
+- A2A agent card: https://horsetruth.com.au/.well-known/agent-card.json
+- A2A JSON-RPC: https://horsetruth.com.au/api/v1/a2a
+- AI catalog: https://horsetruth.com.au/.well-known/ai-catalog.json
+- OpenAPI: https://horsetruth.com.au/api/v1/machine/openapi.json
 
 ## Evidence boundary
 
-Horse Truth exposes derived intelligence only. Raw provider records are not exposed through this MCP surface. Commercial and distribution code has production authority 0 over Race Day scientific selection.
+Horse Truth exposes derived intelligence only. Raw provider records are not sold or exposed through this MCP surface. Odds/market data does not gain authority over Horse Truth scientific conclusions through the commercial layer.
 
-## Status
-
-Production endpoint:
+## Production health
 
 ```text
 https://horsetruth.com.au/api/v1/health
 ```
 
-Canonical production is deployed from the private Horse Truth source repository; this public repository exists for MCP discovery, interoperability, and directory indexing.
+Canonical production is deployed from the private Horse Truth source repository. This public repository exists only for discovery, interoperability, directory indexing, and integration examples.
